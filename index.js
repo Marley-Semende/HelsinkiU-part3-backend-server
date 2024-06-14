@@ -57,17 +57,27 @@ app.delete("/api/persons/:id", (req, res) => {
 });
 
 app.post("/api/persons", (req, res) => {
-  const person = req.body;
-  const ids = personsData.map((person) => person.id);
-  const maxId = Math.max(...ids);
+  const { name, number } = req.body;
+
+  if (!name || !number) {
+    return res.status(400).json({ error: "Both name and number are required" });
+  }
+
+  if (personsData.some((person) => person.name === name)) {
+    return res.status(409).json({ error: "name must be unique" });
+  }
+  const maxId = personsData.reduce(
+    (max, person) => Math.max(max, person.id),
+    0
+  );
   const newPerson = {
     id: maxId + 1,
-    name: person.name,
-    number: person.number,
+    name: name,
+    number: number,
   };
-  personsData = [...personsData, newPerson];
-  res.status(201).json(newPerson);
+
   personsData.concat(newPerson);
+  res.status(201).json(newPerson);
 });
 
 app.listen(PORT, () => {
