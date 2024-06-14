@@ -1,6 +1,7 @@
 import express from "express";
 
 const app = express();
+app.use(express.json());
 const PORT = 3001;
 
 let personsData = [
@@ -53,6 +54,20 @@ app.delete("/api/persons/:id", (req, res) => {
   const id = Number(req.params.id);
   const person = personsData.filter((person) => person.id !== id);
   res.status(204).end();
+});
+
+app.post("/api/persons", (req, res) => {
+  const person = req.body;
+  const ids = personsData.map((person) => person.id);
+  const maxId = Math.max(...ids);
+  const newPerson = {
+    id: maxId + 1,
+    name: person.name,
+    number: person.number,
+  };
+  personsData = [...personsData, newPerson];
+  res.status(201).json(newPerson);
+  personsData.concat(newPerson);
 });
 
 app.listen(PORT, () => {
