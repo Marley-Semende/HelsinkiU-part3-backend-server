@@ -7,12 +7,17 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf dist && cd ../HelsinkiU/part2/phonebook && npm run build && cp -r dist ../HelsinkiU-part3-backend-server",
+    "deploy": "fly deploy",
+    "deploy:full": "npm run build:ui && npm run deploy",    
+    "logs:prod": "fly logs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.7",
     "nodemon": "^3.1.3"
   },
   "dependencies": {
