@@ -88,7 +88,7 @@ app.post("/api/persons", (req, res) => {
     number: number,
   };
 
-  personsData.concat(newPerson);
+  personsData.push(newPerson);
   res.status(201).json(newPerson);
 });
 
