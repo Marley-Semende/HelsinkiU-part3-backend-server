@@ -2,7 +2,7 @@ import mongoose, { Schema, connect } from "mongoose";
 import mongodb from "mongodb";
 
 if (process.argv.length < 3) {
-  console.log("give password, name as argument");
+  console.log("give password, name and phone number as argument");
   process.exit(1);
 }
 
