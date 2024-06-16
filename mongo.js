@@ -1,6 +1,11 @@
 import mongoose, { Schema, connect } from "mongoose";
 import mongodb from "mongodb";
 
+if (process.argv.length < 3) {
+  console.log("give password, name as argument");
+  process.exit(1);
+}
+
 const password = process.argv[2];
 const name = process.argv[3];
 const phoneNumber = process.argv[4];
@@ -12,7 +17,7 @@ console.log("Connected to MongoDB database successfully!");
 
 const personSchema = new mongoose.Schema({
   name: String,
-  phoneNumber: Number,
+  phoneNumber: String,
 });
 
 const Person = mongoose.model("Person", personSchema);
