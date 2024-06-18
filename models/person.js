@@ -25,3 +25,5 @@ personSchema.set("toJSON", {
     delete returnedObject.__v;
   },
 });
+
+export default person;
