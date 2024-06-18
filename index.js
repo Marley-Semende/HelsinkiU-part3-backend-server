@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import Person from "./models/person";
 
 const app = express();
 app.use(cors());
@@ -15,29 +16,6 @@ app.use(
 );
 
 const PORT = process.env.PORT || 3000;
-
-let personsData = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
 
 app.get("/api/persons", (req, res) => {
   res.json(personsData);
