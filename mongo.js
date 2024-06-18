@@ -12,3 +12,8 @@ mongoose
   .catch((error) => {
     console.log("Error connecting to MongoDB database:", error.message);
   });
+
+const personSchema = new mongoose.Schema({
+  name: String,
+  phoneNumber: String,
+});
