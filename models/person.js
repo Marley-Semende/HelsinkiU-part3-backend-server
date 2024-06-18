@@ -26,4 +26,6 @@ personSchema.set("toJSON", {
   },
 });
 
-export default person;
+const Person = mongoose.model("Person", personSchema);
+
+export default Person;
