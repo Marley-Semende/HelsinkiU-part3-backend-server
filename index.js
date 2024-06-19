@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import Person from "./models/person";
+import Person from "./models/person.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -9,71 +9,92 @@ const app = express();
 app.use(cors());
 app.use(express.static("dist"));
 app.use(express.json());
-morgan.token("body", (req) => {
-  return JSON.stringify(req.body);
-});
 
+morgan.token("body", (req) => JSON.stringify(req.body));
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
 
 const PORT = process.env.PORT || 3000;
 
-app.get("/api/persons", (req, res) => {
-  res.json(personsData);
-});
-
-app.get("/api/persons/info", (req, res) => {
-  const date = new Date();
-  res.send(
-    `<p>Phonebook has info for ${personsData.length} people</p>
-    <br>
-    <p>${date}</p>`
-  );
-});
-
-app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = personsData.find((person) => person.id === id);
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).end();
+app.get("/api/persons", async (req, res) => {
+  try {
+    const people = await Person.find({});
+    console.log(people);
+    res.json(people);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = personsData.filter((person) => person.id !== id);
-  res.status(204).end();
+app.get("/api/persons/info", async (req, res) => {
+  try {
+    const count = await Person.countDocuments({});
+    const date = new Date();
+    res.send(
+      `<p>Phonebook has info for ${count} people</p>
+      <br>
+      <p>${date}</p>`
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
-app.post("/api/persons", (req, res) => {
+app.get("/api/persons/:id", async (req, res) => {
+  try {
+    const person = await Person.findById(req.params.id).lean();
+    if (person) {
+      res.json(person);
+    } else {
+      res.status(404).end();
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.delete("/api/persons/:id", async (req, res) => {
+  try {
+    await Person.findByIdAndRemove(req.params.id);
+    res.status(204).end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/api/persons", async (req, res) => {
   const { name, number } = req.body;
 
   if (!name || !number) {
     return res.status(400).json({ error: "Both name and number are required" });
   }
 
-  if (personsData.some((person) => person.name === name)) {
-    return res.status(409).json({ error: "name must be unique" });
-  }
-  const maxId = personsData.reduce(
-    (max, person) => Math.max(max, person.id),
-    0
-  );
-  const newPerson = {
-    id: maxId + 1,
-    name: name,
-    number: number,
-  };
+  try {
+    const existingPerson = await Person.findOne({ name }).lean();
+    if (existingPerson) {
+      return res.status(409).json({ error: "Name must be unique" });
+    }
 
-  personsData.push(newPerson);
-  res.status(201).json(newPerson);
+    const newPerson = new Person({
+      name,
+      phoneNumber: number,
+    });
+
+    const savedPerson = await newPerson.save();
+    res.status(201).json(savedPerson);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: "unknown endpoint" });
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: "Unknown endpoint" });
 };
 app.use(unknownEndpoint);
 
