@@ -2,8 +2,6 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import Person from "./models/person.js";
-import dotenv from "dotenv";
-dotenv.config();
 
 const app = express();
 app.use(cors());
