@@ -73,7 +73,7 @@ app.post("/api/persons", async (req, res) => {
   }
 
   try {
-    const existingPerson = await Person.findOne({ name }).lean();
+    const existingPerson = await Person.findOne({ name });
     if (existingPerson) {
       return res.status(409).json({ error: "Name must be unique" });
     }
